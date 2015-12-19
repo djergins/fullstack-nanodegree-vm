@@ -21,11 +21,18 @@ def deleteMatches():
 
 def deletePlayers():
     """Remove all the player records from the database."""
+    pg = connect()
+    c = pg.cursor()
+    c.execute("delete from players")
 
 
 def countPlayers():
     """Returns the number of players currently registered."""
-
+    pg = connect()
+    c = pg.cursor()
+    c.execute("select count(name) from players")
+    result = c.fetchall()[0][0]
+    return result
 
 def registerPlayer(name):
     """Adds a player to the tournament database.

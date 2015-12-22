@@ -16,7 +16,8 @@ def deleteMatches():
     pg = connect()
     c = pg.cursor()
     c.execute("delete from matches")
-
+    pg.commit()
+    pg.close()
 
 
 def deletePlayers():
@@ -24,6 +25,8 @@ def deletePlayers():
     pg = connect()
     c = pg.cursor()
     c.execute("delete from players")
+    pg.commit()
+    pg.close()
 
 
 def countPlayers():
@@ -32,6 +35,7 @@ def countPlayers():
     c = pg.cursor()
     c.execute("select count(name) from players")
     result = c.fetchall()[0][0]
+    pg.close()
     return result
 
 def registerPlayer(name):
@@ -43,6 +47,12 @@ def registerPlayer(name):
     Args:
       name: the player's full name (need not be unique).
     """
+    pg = connect()
+    c = pg.cursor()
+    query = "insert into players (name) values (%s)"
+    c.execute(query, (name,))
+    pg.commit()
+    pg.close()
 
 
 def playerStandings():
@@ -58,6 +68,14 @@ def playerStandings():
         wins: the number of matches the player has won
         matches: the number of matches the player has played
     """
+    pg = connect()
+    c = pg.cursor()
+    c.execute("select * from players order by wins desc")
+    result = c.fetchall()
+    print(result)
+    pg.commit()
+    pg.close()
+    return result
 
 
 def reportMatch(winner, loser):

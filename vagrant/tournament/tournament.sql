@@ -9,8 +9,8 @@
 create table players (
 id serial primary key,
 name text,
-wins integer,
-matches integer  
+wins integer default 0,
+matches integer default 0  
 );
 
 create table matches (

@@ -8,14 +8,39 @@
 
 create table players (
 id serial primary key,
-name text,
-wins integer default 0,
-matches integer default 0  
+name text  
 );
 
 create table matches (
 id serial primary key,
-winner_id integer references players(id),
-loser_id integer references players(id)
+winner integer references players(id),
+loser integer references players(id)
 );
+
+
+create view standings as
+	-- select the first two columns as simply the id and name from players
+	select p.id, p.name, 
+	coalesce(w.wins, 0) as wins,
+	coalesce(m.match, 0) as match
+	from players p
+	left join
+	-- append column that counts wins for a player 
+	(select winner, count(winner) as wins from
+		matches
+		group by winner) w
+	on p.id = w.winner
+	left join
+	-- append column that counts matches for a player
+	(select m.winner, m.loser, count(p.id) as match from
+	players p, matches m
+	where p.id = m.winner or
+	p.id = m.loser
+	group by p.id, m.winner, m.loser) m
+	on p.id = m.winner
+	or p.id = m.loser
+	group by p.id,w.wins,m.match
+
+	
+	 
 

@@ -70,7 +70,7 @@ def playerStandings():
     """
     pg = connect()
     c = pg.cursor()
-    c.execute("select * from players order by wins desc")
+    c.execute("select * from standings order by wins desc")
     result = c.fetchall()
     print(result)
     pg.commit()
@@ -85,7 +85,12 @@ def reportMatch(winner, loser):
       winner:  the id number of the player who won
       loser:  the id number of the player who lost
     """
- 
+    pg = connect()
+    c = pg.cursor()
+    query = "insert into matches (winner, loser) values (%s, %s)"
+    c.execute(query, (winner, loser,))
+    pg.commit()
+    pg.close() 
  
 def swissPairings():
     """Returns a list of pairs of players for the next round of a match.

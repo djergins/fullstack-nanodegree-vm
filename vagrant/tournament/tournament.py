@@ -72,7 +72,6 @@ def playerStandings():
     c = pg.cursor()
     c.execute("select * from standings order by wins desc")
     result = c.fetchall()
-    print(result)
     pg.commit()
     pg.close()
     return result
@@ -107,5 +106,12 @@ def swissPairings():
         id2: the second player's unique id
         name2: the second player's name
     """
+    pg = connect()
+    c = pg.cursor()
+    c.execute("select * from pairings")
+    result = c.fetchall()
+    pg.commit()
+    pg.close()
+    return result
 
 

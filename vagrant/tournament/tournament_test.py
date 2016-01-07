@@ -124,6 +124,41 @@ def testPairings():
             "After one match, players with one win should be paired.")
     print "8. After one match, players with one win are paired."
 
+def testPreventRematches():
+    deleteMatches()
+    deletePlayers()
+    registerPlayer("Goku")
+    registerPlayer("Vegeta")
+    registerPlayer("Krillin")
+    registerPlayer("Piccolo")
+    standings = playerStandings()
+    [id1, id2, id3, id4] = [row[0] for row in standings]
+    reportMatch(id1, id2)
+    reportMatch(id3, id4)
+    # try different combinations to make sure the 
+    # the rematch is prevented regardless of order. 
+    reportMatch(id2, id1)
+    reportMatch(id4, id3)
+    c = countMatches()
+    if c != 2:
+        raise ValueError(
+            "Players should not be able to face each other again.")
+    print "9. Players face each other only once in a tournament."
+
+def testRoundBye():
+    deleteMatches()
+    deletePlayers()
+    registerPlayer("Cyclops")
+    registerPlayer("Magneto")
+    registerPlayer("Wolverine")
+    registerPlayer("Juggernaut")
+    registerPlayer("Rogue")
+    standings = playerStandings()
+    [id1, id2, id3, id4, id5, id6] = [row[0] for row in standings]
+    reportMatch(id1, id2)
+    reportMatch(id3, id4)
+    reportMatch(id5, id6)
+    
 
 if __name__ == '__main__':
     testDeleteMatches()
@@ -134,6 +169,8 @@ if __name__ == '__main__':
     testStandingsBeforeMatches()
     testReportMatches()
     testPairings()
+    testPreventRematches()
+    testRoundBye()
     print "Success!  All tests pass!"
 
 

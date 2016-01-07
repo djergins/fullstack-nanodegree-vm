@@ -13,9 +13,14 @@ name text
 
 create table matches (
 id serial primary key,
-winner integer references players(id),
+winner integer  references players(id),
 loser integer references players(id)
 );
+
+-- credit to babak for asking how to go about doing this on stack overflow.
+-- https://discussions.udacity.com/t/how-to-prevent-rematches-between-players-without-using-python/38190
+create unique index matches_unique_index 
+	on matches (greatest(winner, loser), least(winner, loser));
 
 
 create view standings as
@@ -39,14 +44,32 @@ create view standings as
 	group by p.id, m.winner, m.loser) m
 	on p.id = m.winner
 	or p.id = m.loser
-	group by p.id,w.wins,m.match;
+	group by p.id,w.wins,m.match
+	order by m.match - w.wins desc;
+
+create view left_pair as
+	select row_number() over (order by id) as row, id, name
+	from standings
+	where (id + 2) % 2 = 1;
+
+create view right_pair as
+	select row_number() over (order by id) as row, id, name
+	from standings
+	where (id + 2) % 2 = 0;
 
 create view pairings as
 	select a.id as player_id_1, a.name as player_name_1,
 	b.id as player_id_2, b.name as player_name_2
-	from standings a, standings b
-	where a.wins = b.wins
-	and a.id < b.id
+	from left_pair a, right_pair b
+	where a.row = b.row;
+	
+
+
+	
+
+
+
+
 
 
 	

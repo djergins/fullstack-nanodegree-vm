@@ -54,6 +54,17 @@ def registerPlayer(name):
     pg.commit()
     pg.close()
 
+def countMatches():
+    """Returns a list of matches. This is used to confirm 
+    that our code is preventing rematches in the 
+    testPreventRematches function.
+    """
+    pg = connect()
+    c = pg.cursor()
+    c.execute('select count(id) from matches')
+    result = c.fetchall()[0][0]
+    pg.close()
+    return result
 
 def playerStandings():
     """Returns a list of the players and their win records, sorted by wins.
@@ -68,12 +79,23 @@ def playerStandings():
         wins: the number of matches the player has won
         matches: the number of matches the player has played
     """
-    pg = connect()
-    c = pg.cursor()
-    c.execute("select * from standings order by wins desc")
-    result = c.fetchall()
-    pg.commit()
-    pg.close()
+    players = countPlayers()
+    if players % 2 == 0:
+        pg = connect()
+        c = pg.cursor()
+        c.execute("select * from standings")
+        result = c.fetchall()
+        pg.commit()
+        pg.close()
+
+    else:
+        registerPlayer('bye')
+        pg = connect()
+        c = pg.cursor()
+        c.execute("select * from standings")
+        result = c.fetchall()
+        pg.commit()
+        pg.close()
     return result
 
 
@@ -87,8 +109,12 @@ def reportMatch(winner, loser):
     pg = connect()
     c = pg.cursor()
     query = "insert into matches (winner, loser) values (%s, %s)"
-    c.execute(query, (winner, loser,))
-    pg.commit()
+    try: 
+        c.execute(query, (winner, loser,))
+        pg.commit()
+
+    except psycopg2.Error as e:
+        pass
     pg.close() 
  
 def swissPairings():
@@ -106,6 +132,7 @@ def swissPairings():
         id2: the second player's unique id
         name2: the second player's name
     """
+    
     pg = connect()
     c = pg.cursor()
     c.execute("select * from pairings")

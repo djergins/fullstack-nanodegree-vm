@@ -44,3 +44,4 @@ def AddPost(content):
     DB.commit()
     DB.close()
     
+    

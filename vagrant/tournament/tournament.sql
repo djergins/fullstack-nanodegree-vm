@@ -47,21 +47,14 @@ create view standings as
 	group by p.id,w.wins,m.match
 	order by m.match - w.wins desc;
 
-create view left_pair as
-	select row_number() over (order by id) as row, id, name
-	from standings
-	where (id + 2) % 2 = 1;
-
-create view right_pair as
-	select row_number() over (order by id) as row, id, name
-	from standings
-	where (id + 2) % 2 = 0;
-
 create view pairings as
 	select a.id as player_id_1, a.name as player_name_1,
 	b.id as player_id_2, b.name as player_name_2
-	from left_pair a, right_pair b
-	where a.row = b.row;
+	from standings a, standings b
+	where (a.match - a.wins) = (b.match - b.wins)
+	and a.id < b.id
+
+
 	
 
 

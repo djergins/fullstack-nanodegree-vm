@@ -148,17 +148,27 @@ def testPreventRematches():
 def testRoundBye():
     deleteMatches()
     deletePlayers()
+    # Register an odd number of players for a tournament
     registerPlayer("Cyclops")
     registerPlayer("Magneto")
     registerPlayer("Wolverine")
     registerPlayer("Juggernaut")
     registerPlayer("Rogue")
+    # Standings will round out odd numbers of players
+    # to even by registering a 'bye' player. 
     standings = playerStandings()
     [id1, id2, id3, id4, id5, id6] = [row[0] for row in standings]
     reportMatch(id1, id2)
     reportMatch(id3, id4)
     reportMatch(id5, id6)
-    
+    #due to the unique constraint preventing rematches
+    #players cannot rematch the 'bye'.
+    reportMatch(id5, id6)
+    c = countMatches()
+    if c != 3:
+        raise ValueError(
+            "Players should not be able to face the bye more than once.")
+    print "10. Rounds with an odd number of players support a bye."
 
 if __name__ == '__main__':
     testDeleteMatches()

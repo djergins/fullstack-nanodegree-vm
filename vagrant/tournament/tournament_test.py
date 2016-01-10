@@ -161,6 +161,7 @@ def testRoundBye():
     registerPlayer("Wolverine")
     registerPlayer("Juggernaut")
     registerPlayer("Rogue")
+    insertBye()
     # Standings will round out odd numbers of players
     # to even by registering a 'bye' player.
     standings = playerStandings()
@@ -177,6 +178,30 @@ def testRoundBye():
             "Players should not be able to face the bye more than once.")
     print "10. Rounds with an odd number of players support a bye."
 
+
+def testDrawMatch():
+    deleteMatches()
+    deletePlayers()
+    registerPlayer("Unstoppable")
+    registerPlayer("Force")
+    standings = playerStandings()
+    [id1, id2] = [row[0] for row in standings]
+    reportMatch(None, None, id1, id2)
+    pg = connect()
+    c = pg.cursor()
+    c.execute("select sum(wins) from standings")
+    result = c.fetchall()[0][0]
+    if result > 0:
+        raise ValueError(
+            "Tie games should not result in a win.")
+    c.execute("select sum(match) from standings")
+    result2 = c.fetchall()[0][0]
+    if result2 != 2:
+        raise ValueError(
+            "Tie games should still update the number of matches.")
+    print "11. Draw games are possible in matches."
+
+
 if __name__ == '__main__':
     testDeleteMatches()
     testDelete()
@@ -188,4 +213,5 @@ if __name__ == '__main__':
     testPairings()
     testPreventRematches()
     testRoundBye()
+    testDrawMatch()
     print "Success!  All tests pass!"

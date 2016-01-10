@@ -83,33 +83,36 @@ def playerStandings():
         wins: the number of matches the player has won
         matches: the number of matches the player has played
     """
-    players = countPlayers()
-    if players % 2 == 0:
-        pg = connect()
-        c = pg.cursor()
-        c.execute("select * from standings")
-        result = c.fetchall()
-        pg.commit()
-        pg.close()
-
-    else:
-        registerPlayer('bye')
-        pg = connect()
-        c = pg.cursor()
-        c.execute("select * from standings")
-        result = c.fetchall()
-        pg.commit()
-        pg.close()
+    pg = connect()
+    c = pg.cursor()
+    c.execute("select * from standings")
+    result = c.fetchall()
+    pg.commit()
+    pg.close()
     return result
 
 
-def reportMatch(winner, loser):
+def reportMatch(winner=None, loser=None,
+                tie_player_1=None, tie_player_2=None):
     """Records the outcome of a single match between two players.
 
     Args:
       winner:  the id number of the player who won
       loser:  the id number of the player who lost
     """
+    if tie_player_1 is not None or tie_player_2 is not None:
+        pg = connect()
+        c = pg.cursor()
+        query = "insert into matches (tie_player_1, tie_player_2) " \
+                " values (%s, %s)"
+        try:
+            c.execute(query, (tie_player_1, tie_player_2,))
+            pg.commit()
+
+        except psycopg2.Error as e:
+            pass
+        pg.close()
+
     pg = connect()
     c = pg.cursor()
     query = "insert into matches (winner, loser) values (%s, %s)"
@@ -137,7 +140,6 @@ def swissPairings():
         id2: the second player's unique id
         name2: the second player's name
     """
-
     pg = connect()
     c = pg.cursor()
     c.execute("select * from pairings")
@@ -145,3 +147,13 @@ def swissPairings():
     pg.commit()
     pg.close()
     return result
+
+
+def insertBye():
+    """Inserts a 'bye' in to the tournament if there is an odd
+    number of players."""
+    c = countPlayers()
+    if c % 2 != 0:
+        registerPlayer("bye")
+    else:
+        print("No bye is neccessary at this time.")

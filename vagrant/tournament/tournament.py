@@ -6,36 +6,38 @@
 import psycopg2
 
 
-def connect():
+def connect(database_name="tournament"):
     """Connect to the PostgreSQL database.  Returns a database connection."""
-    return psycopg2.connect("dbname=tournament")
+    try:
+        db = psycopg2.connect("dbname={}".format(database_name))
+        cursor = db.cursor()
+        return db, cursor
+    except:
+        print("<error message>")
 
 
 def deleteMatches():
     """Remove all the match records from the database."""
-    pg = connect()
-    c = pg.cursor()
-    c.execute("delete from matches")
-    pg.commit()
-    pg.close()
+    db, cursor = connect()
+    cursor.execute("DELETE FROM matches")
+    db.commit()
+    db.close()
 
 
 def deletePlayers():
     """Remove all the player records from the database."""
-    pg = connect()
-    c = pg.cursor()
-    c.execute("delete from players")
-    pg.commit()
-    pg.close()
+    db, cursor = connect()
+    cursor.execute("DELETE FROM players")
+    db.commit()
+    db.close()
 
 
 def countPlayers():
     """Returns the number of players currently registered."""
-    pg = connect()
-    c = pg.cursor()
-    c.execute("select count(name) from players")
-    result = c.fetchall()[0][0]
-    pg.close()
+    db, cursor = connect()
+    cursor.execute("SELECT COUNT(name) FROM players")
+    result = cursor.fetchone()[0]
+    db.close()
     return result
 
 
@@ -48,12 +50,11 @@ def registerPlayer(name):
     Args:
       name: the player's full name (need not be unique).
     """
-    pg = connect()
-    c = pg.cursor()
-    query = "insert into players (name) values (%s)"
-    c.execute(query, (name,))
-    pg.commit()
-    pg.close()
+    db, cursor = connect()
+    query = "INSERT INTO players (name) VALUES (%s)"
+    cursor.execute(query, (name,))
+    db.commit()
+    db.close()
 
 
 def countMatches():
@@ -61,11 +62,10 @@ def countMatches():
     that our code is preventing rematches in the
     testPreventRematches function.
     """
-    pg = connect()
-    c = pg.cursor()
-    c.execute('select count(id) from matches')
-    result = c.fetchall()[0][0]
-    pg.close()
+    db, cursor = connect()
+    cursor.execute('SELECT COUNT(id) FROM matches')
+    result = cursor.fetchone()[0]
+    db.close()
     return result
 
 
@@ -83,16 +83,15 @@ def playerStandings():
         wins: the number of matches the player has won
         matches: the number of matches the player has played
     """
-    pg = connect()
-    c = pg.cursor()
-    c.execute("select * from standings")
-    result = c.fetchall()
-    pg.commit()
-    pg.close()
+    db, cursor = connect()
+    cursor.execute("SELECT id, name, wins, match FROM standings")
+    result = cursor.fetchall()
+    db.commit()
+    db.close()
     return result
 
 
-def reportMatch(winner=None, loser=None,
+def reportMatch(winner, loser,
                 tie_player_1=None, tie_player_2=None):
     """Records the outcome of a single match between two players.
 
@@ -100,29 +99,33 @@ def reportMatch(winner=None, loser=None,
       winner:  the id number of the player who won
       loser:  the id number of the player who lost
     """
+    # Get the id of the bye player if there is one.
+    bye = selectBye()
     if tie_player_1 is not None or tie_player_2 is not None:
-        pg = connect()
-        c = pg.cursor()
-        query = "insert into matches (tie_player_1, tie_player_2) " \
-                " values (%s, %s)"
+        db, cursor = connect()
+        query = "INSERT INTO matches (tie_player_1, tie_player_2) " \
+                " VALUES (%s, %s)"
         try:
-            c.execute(query, (tie_player_1, tie_player_2,))
-            pg.commit()
+            cursor.execute(query, (tie_player_1, tie_player_2,))
+            db.commit()
 
         except psycopg2.Error as e:
             pass
-        pg.close()
-
-    pg = connect()
-    c = pg.cursor()
-    query = "insert into matches (winner, loser) values (%s, %s)"
+        db.close()
+    # If the bye player is present, set them to winner and
+    # set the loser to the winner.
+    if winner == bye:
+        winner = loser
+        loser = bye
+    db, cursor = connect()
+    query = "INSERT INTO matches (winner, loser) VALUES (%s, %s)"
     try:
-        c.execute(query, (winner, loser,))
-        pg.commit()
+        cursor.execute(query, (winner, loser,))
+        db.commit()
 
     except psycopg2.Error as e:
         pass
-    pg.close()
+    db.close()
 
 
 def swissPairings():
@@ -140,12 +143,11 @@ def swissPairings():
         id2: the second player's unique id
         name2: the second player's name
     """
-    pg = connect()
-    c = pg.cursor()
-    c.execute("select * from pairings")
-    result = c.fetchall()
-    pg.commit()
-    pg.close()
+    db, cursor = connect()
+    cursor.execute("SELECT * FROM pairings")
+    result = cursor.fetchall()
+    db.commit()
+    db.close()
     return result
 
 
@@ -157,3 +159,13 @@ def insertBye():
         registerPlayer("bye")
     else:
         print("No bye is neccessary at this time.")
+
+
+def selectBye():
+    """Returns the id of the bye player."""
+    db, cursor = connect()
+    cursor.execute("SELECT id FROM players WHERE name=\'bye\'")
+    result = cursor.fetchall()
+    db.commit()
+    db.close()
+    return result

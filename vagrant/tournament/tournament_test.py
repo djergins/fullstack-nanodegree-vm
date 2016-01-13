@@ -187,15 +187,14 @@ def testDrawMatch():
     standings = playerStandings()
     [id1, id2] = [row[0] for row in standings]
     reportMatch(None, None, id1, id2)
-    pg = connect()
-    c = pg.cursor()
-    c.execute("select sum(wins) from standings")
-    result = c.fetchall()[0][0]
+    db, cursor = connect()
+    cursor.execute("SELECT SUM(wins) FROM standings")
+    result = cursor.fetchone()[0]
     if result > 0:
         raise ValueError(
             "Tie games should not result in a win.")
-    c.execute("select sum(match) from standings")
-    result2 = c.fetchall()[0][0]
+    cursor.execute("SELECT SUM(match) FROM standings")
+    result2 = cursor.fetchone()[0]
     if result2 != 2:
         raise ValueError(
             "Tie games should still update the number of matches.")

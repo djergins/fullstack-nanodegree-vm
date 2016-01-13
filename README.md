@@ -3,6 +3,10 @@ Tournament
 
 Common code for the Relational Databases and Full Stack Fundamentals courses
 
+BEFORE RUNNING: You must generate the schema for the database in tournament.sql. To do this:
+type "psql",
+type "\i tournament.sql"
+
 To run this project, i.e., validate that the python code passes the requirements for the course,
 type, "python tournament_test.py" and validate that all tests pass up  to "Success! All tests pass!"
 

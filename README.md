@@ -3,7 +3,7 @@ Tournament
 
 Common code for the Relational Databases and Full Stack Fundamentals courses
 
-All code and schema definitions are located in the tournament directory.
+All code and schema definitions are located in the vagrant/tournament directory.
 
 BEFORE RUNNING: You must generate the schema for the database in tournament.sql. To do this:
 type "psql",

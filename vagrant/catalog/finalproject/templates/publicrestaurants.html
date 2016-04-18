@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+   <head>
+      <meta http-equiv="X-UA-Compatible">
+      <meta content="IE=edge">
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1">
+      <title>Restaurants</title>
+      <link rel="stylesheet" href="{{ url_for('static', filename='bootstrap.min.css') }}">
+      <link rel=stylesheet type=text/css href="{{ url_for('static', filename='styles.css') }}">
+      <link href='https://fonts.googleapis.com/css?family=Oswald:700' rel='stylesheet' type='text/css'>
+      <script type="text/javascript" src="{{ url_for('static', filename='jquery-1.11.3.min.js') }}"></script>
+      <script type="text/javascript" src="{{ url_for('static', filename='bootstrap.min.js') }}"></script>
+   </head>
+   <body>
+      <div class="container page">
+         <div class="row">
+            <nav class="navbar navbar-dark bg-inverse">
+               <a class="navbar-brand" href="{{url_for('restaurants')}}">Home</a>
+               <a class="navbar-brand" href="{{url_for('showLogin')}}">Log In</a>
+               <a class="navbar-brand" href="{{url_for('disconnect')}}">Log Out</a>
+            </nav>
+            <div class="col-sm-12 top_container">
+               <h1>Restaurants</h1>
+               <hr>
+               </hr>
+            </div>
+         </div>
+         <div class="flash">
+            {% with messages = get_flashed_messages() %}
+            {% if messages %}
+            <ul>
+               {% for message in messages %}
+               <li> <strong> {{ message }} </strong> </li>
+               {% endfor %}
+            </ul>
+            {% endif %}
+            {% endwith %}
+         </div>
+         <div class="row">
+            <div class="col-lg-6">
+               <a class="createLink" href="{{url_for('createRestaurant')}}">Add Restaurant</button>
+            </div>
+         </div>
+         </br>
+         {% if restaurants %}
+         {% for i in restaurants %}
+         <a class="bigLink" href="{{url_for('restaurantMenu', restaurant_id=i.id)}}">{{ i.name }}</a>
+         </br>
+         {% endfor %}
+         {% else %}
+         <p>There are currently no restaurants</p>
+         {% endif %}
+      </div>
+   </body>
+</html>

@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+   <head>
+      <title>New Restaurant</title>
+      <meta http-equiv="X-UA-Compatible">
+      <meta content="IE=edge">
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1">
+      <link rel="stylesheet" href="{{ url_for('static', filename='bootstrap.min.css') }}">
+      <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles.css') }}">
+      <link href='https://fonts.googleapis.com/css?family=Oswald:700' rel='stylesheet' type='text/css'>
+      <script type="text/javascript" src="{{ url_for('static', filename='jquery-1.11.3.min.js') }}"></script>
+      <script type="text/javascript" src="{{ url_for('static', filename='bootstrap.min.js') }}"></script>
+   </head>
+   <body>
+      <div class="formPad">
+      <nav class="navbar navbar-dark bg-inverse">
+         <a class="navbar-brand" href="{{url_for('restaurants')}}">Home</a>
+         <a class="navbar-brand" href="{{url_for('showLogin')}}">Log In</a>
+         <a class="navbar-brand" href="{{url_for('disconnect')}}">Log Out</a>
+      </nav>
+      <h1>Add a Restaurant?</h1>
+      {% with messages = get_flashed_messages() %}
+      {% if messages %}
+      <ul>
+         {% for message in messages %}
+         <li> <strong> {{ message }} </strong> </li>
+         {% endfor %}
+      </ul>
+      {% endif %}
+      {% endwith %}
+      <form method=post action="{{url_for('createRestaurant')}}">
+         <p>Name:</p>
+         <input type="text" placeholder="Restaurant Name" name="name"/>
+         <button class="btn btn-primary" type='submit'>Add</button>
+         <a href="{{url_for('restaurants')}}">Cancel</a>
+      </form>
+      </div
+   </body>
+</html>

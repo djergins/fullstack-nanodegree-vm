@@ -22,28 +22,52 @@ def getShelter():
 	for instance in session.query(Shelter).order_by(Shelter.id):
 		print(instance.id, instance.name)
 
-def getCurrentShelterPopulation():
+def getCurrentSheltersPopulation():
 	shelters = []
-	i = 0
-	for instance in session.query(func.count(Puppy.id)).\
-	group_by(Puppy.shelter_id):
-		shelters.append(instance)
+	for instance in session.query(Shelter):
+		shelters.append(instance.shelter_count)
 	return shelters
+
 
 def getHighestShelterPopulation():
-	shelters = getCurrentShelterPopulation()
+	shelters = getCurrentSheltersPopulation()
 	maxShelter = max(shelters)
 	print maxShelter
-	return shelters
+	return maxShelter
 
 def getLowestPopulationShelter():
-	shelters = getCurrentShelterPopulation()
+	shelters = getCurrentSheltersPopulation()
 	minShelter = min(shelters)
-	print minShelter
-	return shelters
+	return minShelter
+
+def getShelterWithLowestPopulation():
+	lowestPopulation = getLowestPopulationShelter()
+	for instance in session.query(Shelter).filter(Shelter.shelter_count == lowestPopulation):
+		return instance.id
+	
+
+def getShelterCurrentPopulation(puppyShelter = None):
+	for instance in session.query(Shelter).filter(Shelter.id == puppyShelter):
+		shelter_count = instance.shelter_count
+	return shelter_count
+
+def getShelterMaxOccupancy(puppyShelter):
+	for instance in session.query(Shelter).filter(Shelter.id == puppyShelter):
+		max_capacity = instance.maximumCapacity
+	return max_capacity
 
 def setShelterMaxOccupancy(shelterId, shelterMaxOccupancy):
 	session.query(Shelter).filter(Shelter.id == shelterId).\
 		update({Shelter.maximumCapacity: shelterMaxOccupancy},
 			synchronize_session = False)
 	session.commit()
+
+def getVacantShelters():
+	shelters = []
+	for instance in session.query(Shelter).\
+	filter(Shelter.shelter_count < Shelter.maximumCapacity):
+		shelters.append(instance.name)
+	print shelters
+	print len(shelters)
+	return len(shelters)
+

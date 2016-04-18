@@ -1,0 +1,9 @@
+{% from "_formhelpers.html" import render_field %}
+<form method=post action="/restaurants/<int:restaurant_id>/new">
+  <dl>
+    {{ render_field(form.new_menu_item) }}
+    {{ render_field(form.item_description) }}
+    {{ render_field(form.item_price) }}
+  </dl>
+  <p><input type=submit value=new item>
+</form>

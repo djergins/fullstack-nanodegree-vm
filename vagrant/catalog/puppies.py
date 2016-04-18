@@ -1,9 +1,11 @@
 from sqlalchemy import Table, Column, ForeignKey, Integer, String, Date, Numeric
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import relationship
-from sqlalchemy import create_engine
+from sqlalchemy.orm import relationship, sessionmaker, backref
+from sqlalchemy import create_engine, func
+from sqlalchemy_utils import aggregated
  
 Base = declarative_base()
+Session = sessionmaker()
 
 class Shelter(Base):
     __tablename__ = 'shelter'
@@ -15,12 +17,10 @@ class Shelter(Base):
     zipCode = Column(String(10))
     website = Column(String)
     maximumCapacity = Column(Integer)
-    currentOccupancy = Column(Integer)
-
-puppy_adopter = Table('association', Base.metadata,
-    Column('adopter_id', Integer, ForeignKey('adopter.id')),
-    Column('puppy_id', Integer, ForeignKey('puppy.id'))
-)
+    @aggregated('puppies', Column(Integer))
+    def shelter_count(self):
+        return func.count(Puppy.id)
+    puppies = relationship("Puppy")
 
 class Puppy(Base):
     __tablename__ = 'puppy'
@@ -30,8 +30,8 @@ class Puppy(Base):
     dateOfBirth = Column(Date)
     picture = Column(String)
     shelter_id = Column(Integer, ForeignKey('shelter.id'))
-    shelter = relationship(Shelter)
-    adopter = relationship("Adopter", secondary = puppy_adopter)
+    shelter = relationship("Shelter")
+    adopter = relationship("Adopter", secondary = 'puppy_adopter_link')
     weight = Column(Numeric(10))
 
 class Adopter(Base):
@@ -42,7 +42,7 @@ class Adopter(Base):
     city = Column(String(80))
     state = Column(String(20))
     zipCode = Column(String(10))
-    puppy = relationship("Puppy", secondary = puppy_adopter)
+    puppy = relationship("Puppy", secondary = 'puppy_adopter_link')
 
 
 class PuppyProfile(Base):
@@ -54,6 +54,14 @@ class PuppyProfile(Base):
     special_needs = Column(String)
     puppy = relationship(Puppy)
 
+class PuppyAdopterLink(Base):
+    __tablename__ = 'puppy_adopter_link'
+    puppy_id = Column(Integer, ForeignKey('puppy.id'), primary_key = True)
+    adopter_id = Column(Integer, ForeignKey('adopter.id'), primary_key = True)
+    puppy = relationship(Puppy, backref=backref("adopter_assoc"))
+    adopter = relationship(Adopter, backref=backref("puppy_assoc"))
 
-engine = create_engine('sqlite:///puppyshelter.db', echo = True) 
+engine = create_engine('sqlite:///puppyshelter.db') 
 Base.metadata.create_all(engine)
+Session.configure(bind=engine)
+session = Session()

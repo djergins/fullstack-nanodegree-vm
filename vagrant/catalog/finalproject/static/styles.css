@@ -1,0 +1,100 @@
+*{
+	-webkit-box-sizing: border-box;
+	-moz-box-sizing: border-box;
+	-ms-box-sizing: border-box;
+	box-sizing: border-box;
+	/*border: 1px solid blue;*/ 
+}
+
+html .city { 
+  background: url(http://images.123hdwallpapers.com/20150515/city-background-wallpaper-1920x1080.jpg) no-repeat center center fixed; 
+  -webkit-background-size: cover;
+  -moz-background-size: cover;
+  -o-background-size: cover;
+  background-size: cover;
+}
+
+form{
+	padding-top: 20px;
+	padding-bottom: 30px;
+}
+
+nav{
+	font-size: 1.5em;
+}
+
+body{
+	background-color: #383838 ;
+}
+
+h1{
+	font-family: 'Oswald', sans-serif;
+	color: #ff9933;
+}
+
+p{
+	font-family: 'Oswald', sans-serif;
+	color: #ff9933;
+	font-size: 1.5em;
+}
+
+button{
+	background-color: #ff9933;
+}
+
+hr{
+	border: none;
+    height: 4px;
+    /* Set the hr color */
+    color: #ff9933; /* old IE */
+    background-color: #ff9933; /* Modern Browsers */
+}
+
+a:link {
+	color: #ff9933;
+}
+
+a:visited {
+	color: #FFFF33;
+}
+
+.big_title{
+	color: #ff9933;
+}
+
+.top_container{
+	color: #666666;
+	text-align: center;
+}
+
+.bigLink{
+	font-size: 2em;
+}
+
+.createLink{
+	font-size: 2.5em;
+}
+
+.page{
+	background-color: #707070 
+}
+
+.items{
+	padding-bottom: 20px;
+}
+
+.formPad{
+	padding-left: 20px;
+}
+
+.flash{
+	background-color: #ff9933;
+}
+
+.img-circle{
+	border-radius: 50%;
+	height: 8%;
+	width: 8%;
+}
+
+

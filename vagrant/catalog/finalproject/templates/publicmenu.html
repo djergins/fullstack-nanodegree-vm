@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+   <head>
+      <title>Menu for {{restaurant.name}}</title>
+      <meta http-equiv="X-UA-Compatible">
+      <meta content="IE=edge">
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1">
+      <link rel="stylesheet" href="{{ url_for('static', filename='bootstrap.min.css') }}">
+      <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles.css') }}">
+      <link href='https://fonts.googleapis.com/css?family=Oswald:700' rel='stylesheet' type='text/css'>
+      <script type="text/javascript" src="{{ url_for('static', filename='jquery-1.11.3.min.js') }}"></script>
+      <script type="text/javascript" src="{{ url_for('static', filename='bootstrap.min.js') }}"></script>
+   </head>
+   <body>
+      <div class="container page">
+         <nav class="navbar navbar-dark bg-inverse">
+            <a class="navbar-brand" href="{{url_for('restaurants')}}">Home</a>
+            <a class="navbar-brand" href="{{url_for('showLogin')}}">Log In</a>
+            <a class="navbar-brand" href="{{url_for('disconnect')}}">Log Out</a>
+         </nav>
+         <div class="row">
+            <div class="col-sm-12 top_container">
+               <h1>Menu for {{restaurant.name}}</h1>
+            </div>
+         </div>
+         <div class="row">
+            <div class="col-sm-6 top_container">
+               <a class="createLink" href="{{url_for('restaurants')}}">Back to Restaurants</a>
+            </div>
+            <div class="col-sm-6 top_container">
+               <a class="createLink" href={{ url_for('createRestaurantMenuItem', restaurant_id = restaurant.id) }}>Add Menu Item</a>
+            </div>
+         </div>
+         <hr>
+         </hr>
+         <div class="flash">
+            {% with messages = get_flashed_messages() %}
+            {% if messages %}
+            <ul>
+               {% for message in messages %}
+               <li> <strong> {{ message }} </strong> </li>
+               {% endfor %}
+            </ul>
+            {% endif %}
+            {% endwith %}
+         </div>
+         {% if items %}
+         {% for item in items %}
+         <div class="row">
+            <div class="col-md-12">
+               <div class="items">
+                  <img class="img-circle" src="{{creator.picture}}"/>
+                  <p class="card-title">{{item.name}}</p>
+                  <p>{{creator.username}}</p>
+                  </br>
+               </div>
+            </div>
+         </div>
+         {% endfor %}
+         {% else %}
+         <p>There are no items on the menu.</p>
+         {% endif %}
+      </div>
+   </body>
+</html>

@@ -2,6 +2,7 @@ from sqlalchemy import Column, ForeignKey, Integer, String
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship, sessionmaker
 from sqlalchemy import create_engine
+from sqlalchemy_utils import database_exists, create_database
 
 Base = declarative_base()
 Session = sessionmaker()
@@ -55,7 +56,9 @@ class MenuItem(Base):
 
 
 #######insert at end of file #######
-engine = create_engine('sqlite:///restaurantmenuwithusers.db')
+engine = create_engine('postgresql://restaurantmenuwithusers')
+if not database_exists(engine.url):
+	create_database(engine.url)
 Base.metadata.create_all(engine)
 Session.configure(bind=engine)
 session = Session()
